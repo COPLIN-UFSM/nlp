@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- frontend -->
+    <link rel="shortcut icon" href="../static/img/favicon.ico">
+    <link rel="stylesheet" href="../static/css/main.css">
+    <!-- backend -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+          crossorigin="anonymous">
+    <title>Análise de Sentimento</title>
+</head>
+<body>
+
+{% include 'navbar.html' %}
+
+<div class="container">
+    <div class="row justify-content-center text-center">
+        <div class="col-12">
+            <h1>Análise de sentimento</h1>
+        </div>
+    </div>
+    <div class="row justify-content-center text-justify">
+        <div class=" col-xs-3 col-md-3 col-sm-1"></div>
+        <div class="col-xs-3 col-md-6 col-sm-10">
+            <p>
+                Digite uma frase abaixo e clique no botão para analisá-la usando um modelo de linguagem.
+            </p>
+            <p>
+                <a href="#" data-toggle="tooltip" title="Um token pode ser uma palavra inteira ou apenas um trecho,
+                como seu radical.">Tokens</a> que tiverem a maior contribuição para a classificação do texto
+                para a classe de maior probabilidade ficarão coloridos com cores mais fortes.
+            </p>
+        </div>
+        <div class="col-xs-3 col-md-3 col-sm-1"></div>
+    </div>
+    <div class="row justify-content-center text-center">
+        <div class=" col-xs-3 col-md-3 col-sm-1"></div>
+        <div class="col-xs-3 col-md-6 col-sm-10">
+            <form>
+                <label for=input-text-sentiment">Texto</label>
+                <textarea
+                    class="form-control" name="input-text-sentiment"
+                    id="input-text-sentiment" rows="3">Estou amando muito isso!</textarea>
+            </form>
+        </div>
+        <div class="col-xs-3 col-md-3 col-sm-1"></div>
+    </div>
+    <div class="row justify-content-center text-center">
+        <div class="col-12">
+            <button type="button" class="btn btn-dark" id="button_submit_text_sentiment"
+                    style="margin-top: 10px; margin-bottom: 10px">Analisar</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="d-flex justify-content-center">
+            <div id="div-answer-text" style="display: none;">
+                <!-- o texto de resposta será escrito aqui -->
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="d-flex justify-content-center">
+            <div id="div-answer-table" style="display: none;">
+                <!-- a tabela de resposta será escrita aqui -->
+            </div>
+            <div class="spinner-border text-danger" role="status" id="table-spinner" style="display: none;">
+                <span class="sr-only"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<!-- precisa usar isso para o AJAX funcionar! -->
+<script
+	src="https://code.jquery.com/jquery-3.3.1.min.js"
+	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	crossorigin="anonymous">
+</script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
+</script>
+<script src="https://colorjs.io/dist/color.global.js"></script> <!-- para usar cores -->
+<script type="application/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
+<!-- início código AJAX -->
+<script type="application/javascript">
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+
+    activateLink();
+
+    $("#button_submit_text_sentiment").on("click", function(event) {
+        event.preventDefault();
+
+        showSpinner();
+
+        $.ajax({
+            method: "POST",
+            url: "{{ url_for('submit_text_for_analysis') }}", // deve ser o mesmo nome do método definido no servidor
+            data: {text_for_analysis: $("#input-text-sentiment").val()},
+            success: function(res) {
+                console.log('o servidor respondeu o seguinte: ');
+                console.log(res);
+
+                hideSpinner();
+
+                let answer = eval(res);
+
+                buildTable(answer['prediction']);
+                buildText(answer['visualization']);
+            }
+        });
+});
+<!-- fim código AJAX -->
+</script>
+</html>

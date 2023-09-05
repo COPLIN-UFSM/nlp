@@ -1,0 +1,36 @@
+/* Se aplica a qualquer elemento */
+* {
+    font-family: Verdana, sans-serif;
+}
+
+table.sentiment {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.sentiment td, table.sentiment th, table.sentiment thead {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+table.sentiment tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table.sentiment tr:hover {
+    background-color: #ddd;
+}
+
+table.sentiment td {
+    text-align: right;
+}
+
+table.sentiment th, table.sentiment thead {
+    font-weight: bold;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: center;
+    background-color: #CF4D6F;
+    color: white;
+}
