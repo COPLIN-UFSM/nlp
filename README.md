@@ -84,7 +84,7 @@ Este repositório usa um modelo pré-treinado, chamado
 
 O modelo foi disponibilizado por Fábio Souza, Rodrigo Nogueira e Roberto Lotufo no artigo "BERTimbau: pretrained BERT 
 models for Brazilian Portuguese", publicado na Brazilian Conference in Intelligent Systems (2020). Mais informações 
-estão disponíveis no [repositório](https://github.com/neuralmind-ai/portuguese-bert/)) do trabalho. 
+estão disponíveis no [repositório](https://github.com/neuralmind-ai/portuguese-bert/) do trabalho. 
 
 Este modelo foi treinado no [BrWaC (Brazilian Web as Corpus)](https://www.researchgate.net/publication/326303825_The_brWaC_Corpus_A_New_Open_Resource_for_Brazilian_Portuguese)
 para três tarefas: Reconhecimento de entidades nomeadas, similaridade textual de frases e reconhecimento de implicação 
