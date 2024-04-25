@@ -45,14 +45,6 @@ Execute o seguinte comando pela linha de comando:
 conda env create -f environment.yml
 ```
 
-```bash
-conda create --name nlp pip --yes  
-conda activate nlp
-conda install pytorch torchvision torchaudio pytorch-cuda captum -c pytorch -c nvidia
-conda install --file requirements.txt --yes
-pip install --requirement pip_requirements.txt
-```
-
 Para utilizar aceleração por GPU no treinamento dos algoritmos de deep learning (não necessário para execução de modelos
 já treinados), execute o seguinte passo a passo:
 

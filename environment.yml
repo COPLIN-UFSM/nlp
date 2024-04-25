@@ -19,7 +19,6 @@ dependencies:
   - pytorch::torchvision
   - pytorch::torchaudio
   - pytorch-cuda
-  - pytorch::captum
   - datasets
   - evaluate
   - lxml
@@ -32,3 +31,4 @@ dependencies:
     - shap
     - xformers
     - transformers
+    - captum
