@@ -1,0 +1,34 @@
+name: nlp
+channels:
+  - defaults
+  - conda-forge
+  - pytorch
+  - nvidia
+dependencies:
+  - pip
+  - requests
+  - pandas
+  - matplotlib
+  - scikit-learn
+  - tqdm
+  - jupyter
+  - flask
+  - sqlite
+  - numpy
+  - pytorch::pytorch
+  - pytorch::torchvision
+  - pytorch::torchaudio
+  - pytorch-cuda
+  - pytorch::captum
+  - datasets
+  - evaluate
+  - lxml
+  - nltk
+  - spacy
+  - pip:
+    - accelerate
+    - doccano
+    - iterative-stratification
+    - shap
+    - xformers
+    - transformers

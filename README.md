@@ -39,6 +39,12 @@ As configurações da máquina que o repositório foi desenvolvido encontram-se 
 
 ## Instalação
 
+Execute o seguinte comando pela linha de comando:
+
+```bash
+conda env create -f environment.yml
+```
+
 ```bash
 conda create --name nlp pip --yes  
 conda activate nlp

@@ -75,8 +75,16 @@ def evaluate(model_path: str, dataset_path: str) -> dict:
     return metrics
 
 
+def check_compliance(df):
+    return 'text' in df.columns
+
 def annotate(model_path: str, dataset_path: str) -> pd.DataFrame:
     model, tokenizer, pipe, df = __common__(model_path, dataset_path)
+
+    if not check_compliance(df):
+        raise ValueError('A tabela de textos para ser anotados deve conter uma coluna de nome \'text\', com o '
+                         'texto a ser classificado!\nVocê pode trocar o nome desta coluna após a classificação, se '
+                         'assim desejar.')
 
     labels_values = {label: [] for label in model.config.label2id.keys()}
     for label in labels_values.keys():
@@ -91,10 +99,12 @@ def annotate(model_path: str, dataset_path: str) -> pd.DataFrame:
 
             pbar.update(1)
 
+    new_path = dataset_path.replace('.csv', ' (anotado).csv')
     df.to_csv(
-        dataset_path.replace('.csv', '_2.csv'),
+        new_path,
         sep=',', quotechar='"', encoding='utf-8', quoting=csv.QUOTE_NONNUMERIC, index=False
     )
+    print(f'Dataset anotado escrito em {new_path}')
     return df
 
 
@@ -116,7 +126,12 @@ if __name__ == '__main__':
 
     parser.add_argument(
         '--dataset-path', action='store', required=False,
-        help='Opcional - caminho para um dataset no disco que será anotado com os sentimentos do classificador.'
+        help='Opcional - caminho para um dataset no disco que será anotado com os sentimentos do classificador. O '
+             'dataset deve possuir as seguintes características:\n'
+             '* É um arquivo csv;'
+             '* Valores separados por vírgula;'
+             '* Valores textuais estão dentro de "aspas";'
+             '* Codificação do arquivo é UTF-8.'
     )
 
     args = parser.parse_args()
