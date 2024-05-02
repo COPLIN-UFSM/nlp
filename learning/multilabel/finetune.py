@@ -191,7 +191,7 @@ if __name__ == '__main__':
 
     parser.add_argument(
         '--parameters-path', action='store', required=True,
-        help='Caminho para um arquivo com os parâmetros de treinamento, bem como caminho dos datasets.'
+        help='Caminho para um arquivo .json com os parâmetros de treinamento.'
     )
 
     args = parser.parse_args()

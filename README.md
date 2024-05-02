@@ -73,29 +73,7 @@ drivers mais recentes estarem instalados.
 
 Este repositório compreende três aplicações distintas:
 
-<details>
-<summary><h3>Treino de modelos preditivos com Transformers</h3></summary>
-
-| Recurso     | Descrição                                                                                                                                                                  |
-|:------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Scripts     | [learning](learning)                                                                                                                                                       |
-| Bibliotecas | <ul><li>CUDA 11.8</li><li>PyTorch 2.0.1</li><li>transformers 4.32.1</li><li>datasets 2.12.0</li><li>scikit-learn 1.3.0</li><li>NumPy 1.24.4</li><li>pandas 1.5.3</li></ul> |
-
-
-Este repositório usa um modelo pré-treinado, chamado
-[BERTimbau](https://huggingface.co/neuralmind/bert-base-portuguese-cased), e disponível no site
-[Hugging Face](https://huggingface.co/).
-
-O modelo foi disponibilizado por Fábio Souza, Rodrigo Nogueira e Roberto Lotufo no artigo "BERTimbau: pretrained BERT
-models for Brazilian Portuguese", publicado na Brazilian Conference in Intelligent Systems (2020). Mais informações
-estão disponíveis no [repositório](https://github.com/neuralmind-ai/portuguese-bert/) do trabalho.
-
-Este modelo foi treinado no [BrWaC (Brazilian Web as Corpus)](https://www.researchgate.net/publication/326303825_The_brWaC_Corpus_A_New_Open_Resource_for_Brazilian_Portuguese)
-para três tarefas: Reconhecimento de entidades nomeadas, similaridade textual de frases e reconhecimento de implicação
-textual. Aqui, ele passa por um ajuste-fino (fine-tuning) para classificação de sentimentos em 3 classes: positivo (o
-texto em questão tem um sentimento positivo), negativo e neutro.
-
-</details>
+[Treino de modelos preditivos com Transformers](learning/README.md)
 
 <details>
 <summary><h3>Aplicação Web para análise de sentimento</h3></summary>

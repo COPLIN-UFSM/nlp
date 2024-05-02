@@ -5,14 +5,14 @@
   "train_path": "path_to_train_data.csv",
   "val_path": "path_to_val_data.csv",
   "test_path": "path_to_test_data.csv",
+  "input_column": "text",
   "val_size": 0.2,
-  "output_dir": "models",
+  "output_dir": "instance/models",
   "output_model_name": "multilabel_classification",
   "batch_size": 128,
   "optim": "adamw_torch",
   "problem_type": "multi_label_classification",
   "max_length": 128,
-  "input_column": "text",
   "class_name": ["positive", "negative", "neutral"],
   "auto_find_batch_size": true
 }
