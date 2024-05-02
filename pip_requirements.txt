@@ -1,0 +1,5 @@
+accelerate
+doccano
+iterative-stratification
+shap>=0.40.1
+xformers

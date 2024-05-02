@@ -1,11 +1,11 @@
 # Natural Language Processing
 
-Este repositório é uma coleção de scripts e ferramentas utilizados para tarefas de Processamento de Linguagem Natural 
-(Natural Language Processing, ou NLP em inglês) realizados pela Coordenadoria de Planejamento Informacional da UFSM, 
+Este repositório é uma coleção de scripts e ferramentas utilizados para tarefas de Processamento de Linguagem Natural
+(Natural Language Processing, ou NLP em inglês) realizados pela Coordenadoria de Planejamento Informacional da UFSM,
 ligada à Pró-reitoria de Planejamento - PROPLAN.
 
-Os dados utilizados para treinar os modelos de deep learning encontram-se no repositório privado 
-[nlp-data](https://github.com/COPLIN-UFSM/nlp-data). 
+Os dados utilizados para treinar os modelos de deep learning encontram-se no repositório privado
+[nlp-data](https://github.com/COPLIN-UFSM/nlp-data).
 
 ## Sumário
 
@@ -17,11 +17,11 @@ Os dados utilizados para treinar os modelos de deep learning encontram-se no rep
 
 ## Pré-requisitos
 
-Este repositório requer a última versão do [Python Anaconda](https://www.anaconda.com/download) para ser executado, 
+Este repositório requer a última versão do [Python Anaconda](https://www.anaconda.com/download) para ser executado,
 visto que usa o gerenciador de pacotes conda. O código executará em qualquer Sistema Operacional, mas foi desenvolvido
 originalmente para Windows 10 Pro e Ubuntu 22.04.3 LTS (ambos 64 bits).
 
-Também é necessário instalar a versão compatível das bibliotecas [CUDA](https://developer.nvidia.com/cuda-downloads) e 
+Também é necessário instalar a versão compatível das bibliotecas [CUDA](https://developer.nvidia.com/cuda-downloads) e
 [PyTorch](https://pytorch.org/get-started/locally/#anaconda). Clique em cada um dos links anteriores e siga os tutoriais
 para baixar a versão adequada para a sua máquina.
 
@@ -39,10 +39,16 @@ As configurações da máquina que o repositório foi desenvolvido encontram-se 
 
 ## Instalação
 
-Execute o seguinte comando pela linha de comando:
+Infelizmente, não é possível usar um arquivo `environment.yml` para configuração do ambiente virtual. É necessário 
+executar os seguintes comandos, nesta ordem:
 
 ```bash
-conda env create -f environment.yml
+conda create --name nlp python==3.11.* pip --yes  
+conda activate nlp
+conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia --yes
+conda install captum -c pytorch --yes
+conda install --file requirements.txt --yes
+pip install --requirement pip_requirements.txt
 ```
 
 Para utilizar aceleração por GPU no treinamento dos algoritmos de deep learning (não necessário para execução de modelos
@@ -60,12 +66,12 @@ import torch
 torch.cuda.is_available()
 ```
 
-A resposta deve ser `True`, caso uma placa de vídeo NVIDIA compatível esteja disponível. A disponibilidade depende dos 
-drivers mais recentes estarem instalados. 
+A resposta deve ser `True`, caso uma placa de vídeo NVIDIA compatível esteja disponível. A disponibilidade depende dos
+drivers mais recentes estarem instalados.
 
 ## Uso
 
-Este repositório compreende três aplicações distintas: 
+Este repositório compreende três aplicações distintas:
 
 <details>
 <summary><h3>Treino de modelos preditivos com Transformers</h3></summary>
@@ -76,16 +82,16 @@ Este repositório compreende três aplicações distintas:
 | Bibliotecas | <ul><li>CUDA 11.8</li><li>PyTorch 2.0.1</li><li>transformers 4.32.1</li><li>datasets 2.12.0</li><li>scikit-learn 1.3.0</li><li>NumPy 1.24.4</li><li>pandas 1.5.3</li></ul> |
 
 
-Este repositório usa um modelo pré-treinado, chamado 
-[BERTimbau](https://huggingface.co/neuralmind/bert-base-portuguese-cased), e disponível no site 
+Este repositório usa um modelo pré-treinado, chamado
+[BERTimbau](https://huggingface.co/neuralmind/bert-base-portuguese-cased), e disponível no site
 [Hugging Face](https://huggingface.co/).
 
-O modelo foi disponibilizado por Fábio Souza, Rodrigo Nogueira e Roberto Lotufo no artigo "BERTimbau: pretrained BERT 
-models for Brazilian Portuguese", publicado na Brazilian Conference in Intelligent Systems (2020). Mais informações 
-estão disponíveis no [repositório](https://github.com/neuralmind-ai/portuguese-bert/) do trabalho. 
+O modelo foi disponibilizado por Fábio Souza, Rodrigo Nogueira e Roberto Lotufo no artigo "BERTimbau: pretrained BERT
+models for Brazilian Portuguese", publicado na Brazilian Conference in Intelligent Systems (2020). Mais informações
+estão disponíveis no [repositório](https://github.com/neuralmind-ai/portuguese-bert/) do trabalho.
 
 Este modelo foi treinado no [BrWaC (Brazilian Web as Corpus)](https://www.researchgate.net/publication/326303825_The_brWaC_Corpus_A_New_Open_Resource_for_Brazilian_Portuguese)
-para três tarefas: Reconhecimento de entidades nomeadas, similaridade textual de frases e reconhecimento de implicação 
+para três tarefas: Reconhecimento de entidades nomeadas, similaridade textual de frases e reconhecimento de implicação
 textual. Aqui, ele passa por um ajuste-fino (fine-tuning) para classificação de sentimentos em 3 classes: positivo (o
 texto em questão tem um sentimento positivo), negativo e neutro.
 
@@ -139,8 +145,8 @@ python run.py
 | Scripts     | [annotation](annotation)        |
 | Bibliotecas | <ul><li>doccano 1.8.4</li></ul> |
 
-É possível utilizar a biblioteca [doccano](https://github.com/doccano/doccano) para anotar manualmente datasets para 
-tarefas de Processamento de Linguagem Natural. 
+É possível utilizar a biblioteca [doccano](https://github.com/doccano/doccano) para anotar manualmente datasets para
+tarefas de Processamento de Linguagem Natural.
 
 Para isto, é necessário seguir o passo a passo abaixo:
 
@@ -158,11 +164,11 @@ Para isto, é necessário seguir o passo a passo abaixo:
    doccano createuser --username admin --password pass # cria um super-usuário
    ```
 
-3. A ferramenta necessita de dois processos executando ao mesmo tempo para funcionar, ambos iniciados pela linha de 
-comando. É possível executá-los de diversas maneiras: 
-   * Abrir duas janelas do terminal; 
-   * Instalar a ferramenta tmux no Linux (`apt-get install tmux`);
-   * Executar o script [doccano.sh](annotation/doccano.sh) (para Linux) a partir da linha de comando.
+3. A ferramenta necessita de dois processos executando ao mesmo tempo para funcionar, ambos iniciados pela linha de
+   comando. É possível executá-los de diversas maneiras:
+    * Abrir duas janelas do terminal;
+    * Instalar a ferramenta tmux no Linux (`apt-get install tmux`);
+    * Executar o script [doccano.sh](annotation/doccano.sh) (para Linux) a partir da linha de comando.
 
    Os processos são:
 
@@ -171,15 +177,15 @@ comando. É possível executá-los de diversas maneiras:
    ```bash
    doccano webserver --port 8000
    ```
-   
+
    **Uploader de arquivos**
 
    ```bash
    doccano task
    ```
 
-4. Para criar ou remover usuários, acesse a url `http://localhost:8000/admin/auth` ou `http://localhost:8000/admin/`, 
-   sendo `localhost` a URL onde o serviço está hospedado (localhost se for a própria máquina) e 8000 a porta onde o 
+4. Para criar ou remover usuários, acesse a url `http://localhost:8000/admin/auth` ou `http://localhost:8000/admin/`,
+   sendo `localhost` a URL onde o serviço está hospedado (localhost se for a própria máquina) e 8000 a porta onde o
    serviço está disponibilizado.
 
 </details>

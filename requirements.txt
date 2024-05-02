@@ -1,0 +1,16 @@
+pandas
+matplotlib
+scikit-learn
+datasets
+evaluate
+flask
+sqlite
+numpy
+transformers
+lxml
+jupyter
+nltk
+spacy
+tqdm
+requests
+shap
