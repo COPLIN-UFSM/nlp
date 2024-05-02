@@ -1,8 +1,8 @@
-"""
-Código fonte adaptado de
-https://towardsdatascience.com/interpreting-the-prediction-of-bert-model-for-text-classification-5ab09f8ef074
-
-Script para identificar quais palavras em uma sentença colaboram para a predição do sentimento.
+__description__ = """
+    Código fonte adaptado de
+    https://towardsdatascience.com/interpreting-the-prediction-of-bert-model-for-text-classification-5ab09f8ef074
+    
+    Script para identificar quais palavras em uma sentença colaboram para a predição do sentimento.
 """
 
 import argparse
@@ -182,10 +182,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     _instances = [
-        ('eu gosto muito do professor fulano! é o melhor professor do mundo!', 'elogio'),
-        ('este professor é horrível!', 'crítica'),
-        ('é o melhor professor do universo!', 'elogio'),
-        # ('O professor é excelente, mas a disciplina é uma porcaria!', 'Elogio')
+        ('eu gosto muito do professor fulano! é o melhor professor do mundo!', 'positive'),
+        ('este professor é horrível!', 'negative'),
+        ('é o melhor professor do universo!', 'positive')
     ]
 
     main(model_path=args.model_path, instances=_instances, use_cpu=args.use_cpu, write=args.write)

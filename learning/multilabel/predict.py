@@ -1,3 +1,5 @@
+__description__ = """Script que faz a classificação multi-rótulo e multi-classe de sentimento em textos."""
+
 import csv
 import argparse
 
@@ -7,9 +9,6 @@ from tqdm import tqdm
 from sklearn.metrics import roc_auc_score, accuracy_score
 
 from transformers import pipeline, Pipeline, BertTokenizer, BertForSequenceClassification
-
-
-__description__ = 'Script que faz a classificação multi-rótulo e multi-classe de sentimento em textos.'
 
 from learning import load_model
 
