@@ -1,5 +1,20 @@
 # Treino de modelos preditivos com Transformers
 
+Este repositório usa um modelo pré-treinado, chamado [BERTimbau](https://huggingface.co/neuralmind/bert-base-portuguese-cased), e disponível no site [Hugging Face](https://huggingface.co/).
+
+O modelo foi disponibilizado por Fábio Souza, Rodrigo Nogueira e Roberto Lotufo no artigo "BERTimbau: pretrained BERT
+models for Brazilian Portuguese", publicado na Brazilian Conference in Intelligent Systems (2020). Mais informações
+estão disponíveis no [repositório](https://github.com/neuralmind-ai/portuguese-bert/) do trabalho.
+
+Este modelo foi treinado no [BrWaC (Brazilian Web as Corpus)](https://www.researchgate.net/publication/326303825_The_brWaC_Corpus_A_New_Open_Resource_for_Brazilian_Portuguese)
+para três tarefas: reconhecimento de entidades nomeadas, similaridade textual de frases, e reconhecimento de implicação
+textual. Aqui, ele passa por um ajuste-fino (fine-tuning) para classificação de sentimentos em 3 classes: positivo (o
+texto em questão tem um sentimento positivo), negativo e neutro.
+
+Os dados utilizados para fine-tuning são provenientes de avaliações de Ensino-Aprendizagem da UFSM de anos anteriores,
+e avaliações de comentários dos Restaurantes Universitários. Todos os dados foram anonimizados antes de sua utilização
+pelo modelo.
+
 ## Bibliotecas usadas
 
 * CUDA 12.4
@@ -11,22 +26,11 @@
 * NumPy 1.24.3
 * pandas 1.5.3
 
-Este repositório usa um modelo pré-treinado, chamado [BERTimbau](https://huggingface.co/neuralmind/bert-base-portuguese-cased), e disponível no site [Hugging Face](https://huggingface.co/).
-
-O modelo foi disponibilizado por Fábio Souza, Rodrigo Nogueira e Roberto Lotufo no artigo "BERTimbau: pretrained BERT
-models for Brazilian Portuguese", publicado na Brazilian Conference in Intelligent Systems (2020). Mais informações
-estão disponíveis no [repositório](https://github.com/neuralmind-ai/portuguese-bert/) do trabalho.
-
-Este modelo foi treinado no [BrWaC (Brazilian Web as Corpus)](https://www.researchgate.net/publication/326303825_The_brWaC_Corpus_A_New_Open_Resource_for_Brazilian_Portuguese)
-para três tarefas: Reconhecimento de entidades nomeadas, similaridade textual de frases e reconhecimento de implicação
-textual. Aqui, ele passa por um ajuste-fino (fine-tuning) para classificação de sentimentos em 3 classes: positivo (o
-texto em questão tem um sentimento positivo), negativo e neutro.
-
 ## Uso
 
-Para usar este script:
+Para utilizar este script:
 
-1. A partir do diretório raiz do repositório, crie uma pasta `instance´. Dentro dela, crie uma pasta `models`. 
+1. A partir do diretório raiz do repositório, crie uma pasta `instance`. Dentro dela, crie uma pasta `models`. 
   Finalmente, dentro da pasta `models`, crie outra pasta, desta vez com o nome do modelo que será treinado. Neste 
   exemplo usaremos o nome `multilabel_two_classes`, mas você pode usar qualquer outro nome.
 
@@ -50,7 +54,7 @@ Para usar este script:
 3. Abra este arquivo em um editor de texto, e mude os parâmetros de acordo com sua preferência. Os principais parâmetros
    a serem modificados são:
 
-   * use_cpu: Use `true` caso você não tenha uma placa de vídeo NVIDIA compatível com CUDA. Para saber se sua placa é 
+   * use_cpu: use `true` caso você não tenha uma placa de vídeo NVIDIA compatível com CUDA. Para saber se sua placa é 
      compatível, execute o comando `python -c "import torch; print(torch.cuda.is_available())`; caso a saída deste 
      comando seja `True`, você tem uma placa de vídeo compatível e configurada.
    * num_train_epochs: número de épocas para treinar o modelo. Para fazer um fine-tuning, não é necessário utilizar 
