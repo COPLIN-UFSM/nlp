@@ -7,6 +7,12 @@ ligada à Pró-reitoria de Planejamento - PROPLAN.
 Os dados utilizados para treinar os modelos de deep learning encontram-se no repositório privado
 [nlp-data](https://github.com/COPLIN-UFSM/nlp-data).
 
+Este repositório compreende três aplicações distintas:
+
+* [Treino de modelos preditivos com Transformers](learning/README.md)
+* [Aplicação Web para análise de sentimento](app/README.md)
+* [Anotação de comentários com a biblioteca doccano](DOCCANO.md)
+
 ## Sumário
 
 * [Pré-requisitos](#pré-requisitos)
@@ -68,14 +74,6 @@ torch.cuda.is_available()
 
 A resposta deve ser `True`, caso uma placa de vídeo NVIDIA compatível esteja disponível. A disponibilidade depende dos
 drivers mais recentes estarem instalados.
-
-## Uso
-
-Este repositório compreende três aplicações distintas:
-
-### [Treino de modelos preditivos com Transformers](learning/README.md)
-### [Aplicação Web para análise de sentimento](app/README.md)
-### [Anotação de comentários com a biblioteca doccano](DOCCANO.md)
 
 ## Contato
 
