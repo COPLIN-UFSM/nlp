@@ -45,8 +45,11 @@ As configurações da máquina que o repositório foi desenvolvido encontram-se 
 
 ## Instalação
 
-Infelizmente, não é possível usar um arquivo `environment.yml` para configuração do ambiente virtual. É necessário 
-executar os seguintes comandos, nesta ordem:
+> [!WARNING]
+> Infelizmente, não é possível usar um arquivo `environment.yml` para configuração do ambiente virtual. 
+>
+
+Para criar o ambiente virtual com as bibliotecas para execução na GPU, execute os seguintes comandos, nesta ordem:
 
 ```bash
 conda create --name nlp python==3.11.* pip --yes  

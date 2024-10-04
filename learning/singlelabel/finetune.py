@@ -10,6 +10,7 @@ import datasets
 import evaluate
 import numpy as np
 import pandas as pd
+import torch
 from datasets import Dataset
 from transformers import TrainingArguments, Trainer, BertForSequenceClassification, BertTokenizer
 
@@ -53,6 +54,16 @@ def get_dataset_metadata(df: str, class_name: str) -> tuple:
     return num_labels, labels, label2id, id2label
 
 
+def get_device(use_cpu: bool = False) -> str:
+    if not use_cpu:
+        device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+    else:
+        device = 'cpu'
+
+    print(f'using {device} as device')
+    return device
+
+
 def load_single_label_dataset(path, parameters, tokenizer) -> tuple:
     """
     Carrega um ou mais datasets do disco.
@@ -78,6 +89,8 @@ def main(parameters_path: str) -> None:
     with open(parameters_path, 'r', encoding='utf-8') as read_file:
         parameters = json.load(read_file)
 
+    device = get_device(parameters['use_cpu'])
+
     tokenizer = BertTokenizer.from_pretrained(parameters['model_name'], do_lower_case=False)  # type: BertTokenizer
 
     set_names = ['val', 'test', 'train']
@@ -95,17 +108,19 @@ def main(parameters_path: str) -> None:
     # carrega um modelo pré-treinado com uma camada totalmente conectada nova no fim do modelo
     model = BertForSequenceClassification.from_pretrained(
         parameters['model_name'], num_labels=num_labels, id2label=id2label, label2id=label2id,
-        problem_type=parameters['problem_type']
-    )  # type: BertForSequenceClassification
+        problem_type=parameters['problem_type'], device=device
+    )
 
     training_args = TrainingArguments(
         output_dir=parameters['output_dir'],
-        evaluation_strategy='epoch',
+        eval_strategy='epoch',
+        save_strategy="epoch",
+        save_total_limit=1,
         num_train_epochs=parameters['num_train_epochs'],
         no_cuda=parameters['use_cpu'],
         optim=parameters['optim'],
         load_best_model_at_end=True,
-        auto_find_batch_size=True
+        auto_find_batch_size=True,
     )
 
     trainer = Trainer(

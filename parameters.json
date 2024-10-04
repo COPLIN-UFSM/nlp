@@ -8,11 +8,11 @@
   "input_column": "text",
   "val_size": 0.2,
   "output_dir": "instance/models",
-  "output_model_name": "multilabel_classification",
+  "output_model_name": "student-sentiment-analysis-multilabel",
   "batch_size": 128,
   "optim": "adamw_torch",
   "problem_type": "multi_label_classification",
   "max_length": 128,
-  "class_name": ["positive", "negative", "neutral"],
+  "class_name": ["positive", "negative"],
   "auto_find_batch_size": true
 }

@@ -131,15 +131,16 @@ def do_train_model(
     model = BertForSequenceClassification.from_pretrained(
         parameters['model_name'], num_labels=num_labels, id2label=id2label, label2id=label2id,
         problem_type=parameters['problem_type']
-    )  # type: BertForSequenceClassification
+    )
 
     training_args = TrainingArguments(
         output_dir=parameters['output_dir'],
-        evaluation_strategy='epoch',
-        num_train_epochs=parameters['num_train_epochs'],
-        use_cpu=parameters['use_cpu'],
-        optim=parameters['optim'],
+        eval_strategy='epoch',
         save_strategy='epoch',
+        save_total_limit=1,
+        num_train_epochs=parameters['num_train_epochs'],
+        # use_cpu=parameters['use_cpu'],
+        optim=parameters['optim'],
         load_best_model_at_end=True,
         auto_find_batch_size=parameters['auto_find_batch_size'],
     )
@@ -175,7 +176,19 @@ def evaluate_on_test_set(trainer: Trainer, test_set=None) -> dict:
     return {}
 
 
+def get_device(use_cpu: bool = False) -> str:
+    if not use_cpu:
+        device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+    else:
+        device = 'cpu'
+
+    return device
+
+
 def main(parameters, original_sets) -> None:
+    device = get_device(parameters['use_cpu'])
+    print(f'using {device} as device')
+
     tokenizer = BertTokenizer.from_pretrained(parameters['model_name'], do_lower_case=False)  # type: BertTokenizer
     tokenized_sets, num_labels, labels, label2id, id2label = tokenize_datasets(tokenizer, original_sets, parameters)
     tokenizer, trainer = do_train_model(tokenizer, parameters, tokenized_sets, num_labels, id2label, label2id)
