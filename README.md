@@ -80,7 +80,7 @@ drivers mais recentes estarem instalados.
 
 ## Contato
 
-Desenvolvido originalmente por Henry Cagnini [henry.cagnini@ufsm.br]() e Raphael Amaro [raphael.amaro@ufsm.br]().
+Desenvolvido originalmente por Henry Cagnini [henry.cagnini@ufsm.br]() e idealizado por Raphael Amaro [raphael.amaro@ufsm.br]().
 
 ## Bibliografia
 
