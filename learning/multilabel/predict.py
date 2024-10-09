@@ -11,6 +11,8 @@ from sklearn.metrics import roc_auc_score, accuracy_score
 from transformers import pipeline, Pipeline, BertTokenizer, BertForSequenceClassification
 
 from learning import load_model
+from datasets import Dataset
+import torch
 
 
 def classify(pipe: Pipeline, text: str) -> list:
@@ -37,18 +39,20 @@ def main(model_path: str):
     print(pd.DataFrame.from_dict(predict[0]))
 
 
-def __common__(model_path: str, dataset_path: str) -> tuple:
-    model = BertForSequenceClassification.from_pretrained(model_path)  # type: BertForSequenceClassification
-    tokenizer = BertTokenizer.from_pretrained(model_path, model_max_length=model.config.max_position_embeddings)
-    pipe = pipeline('sentiment-analysis', model=model, tokenizer=tokenizer)
+def __configure__(model_path: str, dataset_path: str, token=None) -> tuple:
+    model = BertForSequenceClassification.from_pretrained(model_path, token=token)
+    tokenizer = BertTokenizer.from_pretrained(
+        model_path, model_max_length=model.config.max_position_embeddings, token=token
+    )
+    pipe = pipeline('sentiment-analysis', model=model, tokenizer=tokenizer, device=get_device())
 
     df = pd.read_csv(dataset_path, sep=',', quotechar='"', encoding='utf-8', quoting=csv.QUOTE_NONNUMERIC)
 
     return model, tokenizer, pipe, df
 
 
-def evaluate(model_path: str, dataset_path: str) -> dict:
-    model, tokenizer, pipe, df = __common__(model_path, dataset_path)
+def evaluate(dataset_path: str, model_path: str, token: str = None) -> dict:
+    model, tokenizer, pipe, df = __configure__(model_path, dataset_path, token)
 
     preds = pipe(df['text'].values.tolist(), top_k=None)
 
@@ -77,8 +81,22 @@ def evaluate(model_path: str, dataset_path: str) -> dict:
 def check_compliance(df):
     return 'text' in df.columns
 
-def annotate(model_path: str, dataset_path: str) -> pd.DataFrame:
-    model, tokenizer, pipe, df = __common__(model_path, dataset_path)
+
+def get_device():
+    return 'cuda:0' if torch.cuda.is_available() else 'cpu'
+
+
+def annotate(dataset_path: str, model_path: str, token: str = None) -> pd.DataFrame:
+    """
+    Anota a polaridade de comentários de um arquivo csv para outro arquivo csv.
+
+    :param dataset_path: Caminho para um arquivo csv em disco.
+    :param model_path: Caminho para o modelo do HuggingFace, armazenado em disco ou no repositório do HuggingFace.
+    :param token: Opcional - caso o modelo esteja armazenado em um repositório privado do HuggingFace, o token de
+        acesso a este modelo.
+    """
+
+    model, tokenizer, pipe, df = __configure__(model_path, dataset_path, token)
 
     if not check_compliance(df):
         raise ValueError('A tabela de textos para ser anotados deve conter uma coluna de nome \'text\', com o '
@@ -103,7 +121,7 @@ def annotate(model_path: str, dataset_path: str) -> pd.DataFrame:
         new_path,
         sep=',', quotechar='"', encoding='utf-8', quoting=csv.QUOTE_NONNUMERIC, index=False
     )
-    print(f'Dataset anotado escrito em {new_path}')
+    print(f'Dataset anotado em {new_path}')
     return df
 
 
@@ -114,30 +132,38 @@ if __name__ == '__main__':
 
     parser.add_argument(
         '--mode', action='store', required=True,
-        help='Modo que este script será rodado: \'annotate\', \'evaluate\''
+        help='Modo que este script será rodado: \'annotate\' para anotar dados de um arquivo csv para outro arquivo '
+             'csv, ou \'evaluate\' para validar a qualidade do modelo versus um '
+             'dataset de teste'
     )
 
     parser.add_argument(
         '--model-path', action='store', required=True,
         help='Um dos dois: caminho para uma pasta onde o modelo treinado está armazenado, OU URL do repositório '
-             'HuggingFace'
+             'no HuggingFace'
     )
 
     parser.add_argument(
-        '--dataset-path', action='store', required=False,
-        help='Opcional - caminho para um dataset no disco que será anotado com os sentimentos do classificador. O '
-             'dataset deve possuir as seguintes características:\n'
-             '* É um arquivo csv;'
-             '* Valores separados por vírgula;'
-             '* Valores textuais estão dentro de "aspas";'
-             '* Codificação do arquivo é UTF-8.'
+        '--token', action='store', required=False, default=None,
+        help='Opcional - caso o modelo esteja armazenado em um repositório privado do HuggingFace, o token de acesso'
+             'a este modelo.'
+    )
+
+    parser.add_argument(
+        '--dataset-path', action='store', required=True,
+        help='Caminho para um dataset no disco que será anotado com os sentimentos do classificador. O '
+             'dataset deve possuir as seguintes características: '
+             '(1) É um arquivo csv; '
+             '(2) Valores separados por vírgula; '
+             '(3) Valores textuais estão dentro de "aspas"; '
+             '(4) Codificação do arquivo é UTF-8. '
     )
 
     args = parser.parse_args()
 
     if args.mode == 'annotate':
-        annotate(model_path=args.model_path, dataset_path=args.dataset_path)
+        annotate(dataset_path=args.dataset_path, model_path=args.model_path, token=args.token)
     elif args.mode == 'evaluate':
-        evaluate(model_path=args.model_path, dataset_path=args.dataset_path)
+        evaluate(dataset_path=args.dataset_path, model_path=args.model_path, token=args.token)
     else:
         raise AttributeError(f'Modo de execução desconhecido: {args.mode}')
