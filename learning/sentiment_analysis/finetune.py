@@ -2,6 +2,7 @@ import os
 import csv
 import json
 import argparse
+import shutil
 
 import torch
 import numpy as np
@@ -13,6 +14,113 @@ from sklearn.metrics import roc_auc_score, accuracy_score
 from transformers import BertTokenizer, BertForSequenceClassification, TrainingArguments, Trainer, EvalPrediction
 
 __description__ = 'Script para fazer fine-tuning de um modelo de linguagem, para a tarefa de análise de sentimento.'
+
+import time
+import hashlib
+import pandas as pd
+import requests
+from tqdm import tqdm
+
+
+def compute_file_sha1(file_path):
+    sha1_hash = hashlib.sha1()
+    with open(file_path, 'rb') as read_file:
+        contents = read_file.read()
+
+    data = b'blob ' + str(len(contents)).encode() + b'\0' + contents
+    sha1_hash.update(data)
+    return sha1_hash.hexdigest()
+
+
+def download_dataset(
+        owner: str,
+        repo: str,
+        local_dataset_folder: str,
+        remote_dataset_folder: str,
+        token: str
+):
+    """
+    Checks if dataset is downloaded locally. If not, downloads it from github
+
+    :param owner: owner of repository (either github organization or user)
+    :param repo: name of repository
+    :param local_dataset_folder: Path where dataset will be stored locally
+    :param remote_dataset_folder: Path where dataset is store in github, from repository root
+    :param token: github access token
+    """
+
+    def __do_request__(path, stream=False, write_path: str = None):
+        if not stream:
+            return requests.get(
+                f'https://api.github.com/repos/{owner}/{repo}/contents/{path}',
+                headers={
+                    'accept': 'application/vnd.github.v3.raw',
+                    'authorization': f'token {token}'
+                }
+            )
+        else:
+            with requests.get(
+                    f'https://api.github.com/repos/{owner}/{repo}/contents/{path}',
+                    headers={
+                        'accept': 'application/vnd.github.v3.raw',
+                        'authorization': f'token {token}'
+                    }, stream=True
+            ) as r:
+                with open(write_path, 'wb') as f:
+                    for chunk in r.iter_content(chunk_size=8192):
+                        # If you have chunk encoded response uncomment if
+                        # and set chunk_size parameter to None.
+                        # if chunk:
+                        f.write(chunk)
+                return write_path
+
+    if not os.path.exists(local_dataset_folder):
+        os.mkdir(local_dataset_folder)
+
+    for some_set in ['train', 'val', 'test']:
+        print(f'on set {some_set}')
+
+        remote_set_folder = '/'.join([remote_dataset_folder, some_set])
+
+        remote_set_folder_md5 = '/'.join([remote_dataset_folder, some_set, f'{some_set}.md5'])
+        local_set_folder_md5 = os.path.join(local_dataset_folder, some_set, f'{some_set}.md5')
+
+        # solicita o md5 do dataset antes
+        md5_remote_contents = __do_request__(remote_set_folder_md5).text
+        if os.path.exists(local_set_folder_md5):
+            with open(local_set_folder_md5, 'r') as read_file:
+                md5_local_contents = read_file.read()
+        else:
+            md5_local_contents = None
+
+        print(f'\t local md5: {md5_local_contents}')
+        print(f'\tremote md5: {md5_remote_contents}')
+
+        if md5_local_contents != md5_remote_contents:
+            print(f'\tset not found locally or deprecated; downloading again')
+            fold_set_path = os.path.join(local_dataset_folder, some_set)
+
+            if os.path.exists(fold_set_path):
+                shutil.rmtree(fold_set_path)
+            os.mkdir(fold_set_path)
+
+            contents = __do_request__(remote_set_folder)
+            remote_files = json.loads(contents.text)
+
+            for some_file in tqdm(remote_files, desc=f'Downloading {some_set} files'):
+                _file_path = os.path.join(fold_set_path, some_file['name'])
+                _file_path = __do_request__(some_file['path'], stream=True, write_path=_file_path)
+
+                sha = compute_file_sha1(_file_path)
+                if sha != some_file['sha']:
+                    raise FileNotFoundError(f'incompatible MD5!\nexpected: {some_file["sha"]}\n   found: {sha}')
+                time.sleep(1)
+
+            with open(local_set_folder_md5, 'w') as write_file:
+                write_file.write(md5_remote_contents)
+
+        else:
+            print('\tset found locally; skipping download')
 
 
 def multi_label_metrics(predictions, labels, threshold=0.5):
@@ -207,17 +315,29 @@ if __name__ == '__main__':
         help='Caminho para um arquivo .json com os parâmetros de treinamento.'
     )
 
+    parser.add_argument(
+        '--github-access-token', action='store', required=True,
+        help='Caminho para um arquivo .txt com credenciais de acesso ao GitHub.'
+    )
     args = parser.parse_args()
+
+    with open(args.github_access_token, 'r', encoding='utf-8') as read_file:
+        _token = read_file.read()
 
     with open(args.parameters_path, 'r', encoding='utf-8') as read_file:
         _parameters = json.load(read_file)
 
-    _set_names = ['val', 'test', 'train']
+    download_dataset(
+        _parameters['repo_owner'], _parameters['repo_name'],
+        _parameters['local_dataset_path'], _parameters['remote_dataset_path'],
+        _token
+    )
 
     _original_sets = dict()
-    for _set_name in _set_names:
+    for _set_name in ['val', 'test', 'train']:
         _original_sets[_set_name] = pd.read_csv(
-            _parameters[f'{_set_name}_path'], encoding='utf-8', sep=',', quotechar='"', quoting=csv.QUOTE_NONNUMERIC
+            os.path.join(_parameters['local_dataset_path'], _set_name, f'{_set_name}.csv'),
+            encoding='utf-8', sep=',', quotechar='"', quoting=csv.QUOTE_NONNUMERIC
         )
 
     main(parameters=_parameters, original_sets=_original_sets)

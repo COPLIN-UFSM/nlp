@@ -41,7 +41,7 @@ Para utilizar este script:
          multilabel_two_classes/
    ```
 
-2. Copie-e-cole para dentro da pasta do modelo o arquivo [parameters.json](../parameters.json):
+2. Copie-e-cole para dentro da pasta do modelo o arquivo [parameters.json](parameters.json):
 
    ```
    nlp/
@@ -70,7 +70,7 @@ Para utilizar este script:
      `C:\\Users\\henry\\Projects\\nlp\\instance\\models\\multilabel_two_classes` 
    * output_model_name: Nome do modelo. Neste tutorial, estamos usando `multilabel_two_classes`
 
-4. Após a configuração, e a partir da pasta raiz do diretório, execute o script [finetune.py](multilabel/finetune.py), 
+4. Após a configuração, e a partir da pasta raiz do diretório, execute o script [finetune.py](finetune.py), 
    passando como parâmetro o caminho do arquivo `parameters.json`:
 
    ```bash

@@ -13,7 +13,7 @@
 
 ## Uso
 
-Após treinamento do modelo preditivo (Seção [Treino de modelos preditivos com Transformers](../learning/README.md)),
+Após treinamento do modelo preditivo (Seção [Treino de modelos preditivos com Transformers](../learning/sentiment_analysis/README.md)),
 é possível carregar uma aplicação Web para testar em tempo real as predições.
 
 Para isto, crie uma pasta `instance` dentro do diretório [app](.), e dentro desta pasta, crie um arquivo `config.py`.

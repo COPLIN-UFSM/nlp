@@ -7,8 +7,8 @@ from flask import Flask
 from app.views import main as views_func
 from app.models import main as models_func
 
-from learning.interpret import Visualizer
-from learning.singlelabel.predict import classify, load_model
+from learning.sentiment_analysis.interpret import Visualizer
+from learning import classify, load_model
 
 
 def get_host():

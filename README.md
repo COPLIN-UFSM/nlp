@@ -9,7 +9,7 @@ Os dados utilizados para treinar os modelos de deep learning encontram-se no rep
 
 Este repositório compreende três aplicações distintas:
 
-* [Treino de modelos preditivos com Transformers](learning/README.md)
+* [Treino de modelos preditivos com Transformers](learning/sentiment_analysis/README.md)
 * [Aplicação Web para análise de sentimento](app/README.md)
 * [Anotação de comentários com a biblioteca doccano](DOCCANO.md)
 
