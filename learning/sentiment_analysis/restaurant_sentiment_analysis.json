@@ -7,12 +7,12 @@
   "remote_dataset_path": "data/sentiment_analysis/output/multilabel-student-sentiment-analysis",
   "local_dataset_path": "C:\\Users\\henry\\Projects\\COPLIN-UFSM\\nlp-data\\data\\sentiment_analysis\\output\\multilabel-student-sentiment-analysis",
   "input_column": "text",
-  "output_dir": "instance/models",
-  "output_model_name": "student-sentiment-analysis-multilabel",
+  "output_dir": "C:\\Users\\henry\\Projects\\COPLIN-UFSM\\nlp\\learning\\sentiment_analysis\\instance\\models",
+  "output_model_name": "restaurant-sentiment-analysis-multilabel",
   "optim": "adamw_torch",
   "problem_type": "multi_label_classification",
   "batch_size": 128,
   "max_length": 128,
-  "class_name": ["positive", "negative"],
+  "class_name": ["negative","positive","nome/palavrão","comida/bebida","Atendimento","higiene/limpeza","marmitas","manutenção"],
   "auto_find_batch_size": true
 }

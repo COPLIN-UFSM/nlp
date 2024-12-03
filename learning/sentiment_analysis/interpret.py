@@ -16,7 +16,7 @@ from captum.attr._utils.visualization import VisualizationDataRecord
 from lxml import etree, html
 from transformers import BertTokenizer, Pipeline
 
-from learning.singlelabel.predict import load_model
+from learning import load_model
 
 
 class Visualizer(object):

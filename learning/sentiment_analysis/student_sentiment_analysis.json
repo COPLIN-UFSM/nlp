@@ -1,0 +1,18 @@
+{
+  "model_name": "neuralmind/bert-base-portuguese-cased",
+  "num_train_epochs": 3,
+  "use_cpu": false,
+  "repo_owner": "COPLIN-UFSM",
+  "repo_name": "nlp-data",
+  "remote_dataset_path": "data/sentiment_analysis/output/multilabel-student-sentiment-analysis",
+  "local_dataset_path": "C:\\Users\\henry\\Projects\\COPLIN-UFSM\\nlp-data\\data\\sentiment_analysis\\output\\multilabel-student-sentiment-analysis",
+  "input_column": "text",
+  "output_dir": "C:\\Users\\henry\\Projects\\COPLIN-UFSM\\nlp\\learning\\sentiment_analysis\\instance\\models",
+  "output_model_name": "student-sentiment-analysis-multilabel",
+  "optim": "adamw_torch",
+  "problem_type": "multi_label_classification",
+  "batch_size": 128,
+  "max_length": 128,
+  "class_name": ["positive", "negative"],
+  "auto_find_batch_size": true
+}

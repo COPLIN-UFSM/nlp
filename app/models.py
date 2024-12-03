@@ -12,7 +12,7 @@ def main(app: flask.app.Flask, classify_function, visualizer) -> flask.app.Flask
         else:
             raise ValueError(f'Método HTTP desconhecido na função submit_text_for_analysis: {request.method}')
 
-        prediction = classify_function(text)  # pega primeiro item da lista de respostas
+        prediction = classify_function(text)[0]  # pega primeiro item da lista de respostas
         pred_dict = visualizer.to_dict(visualizer.interpret_text(text))
 
         answer = {

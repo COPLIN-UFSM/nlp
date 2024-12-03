@@ -1,3 +1,9 @@
+__description__ = '''
+Executa um servidor em Flask para testar a predição de um modelo de análise de sentimentos.
+'''
+
+import argparse
+import json
 import os
 import sys
 import socket
@@ -8,7 +14,8 @@ from app.views import main as views_func
 from app.models import main as models_func
 
 from learning.sentiment_analysis.interpret import Visualizer
-from learning import classify, load_model
+from learning import load_model
+from learning.sentiment_analysis.predict import classify
 
 
 def get_host():
@@ -21,9 +28,12 @@ def get_host():
     return host
 
 
-def main():
+def main(parameters_path: str):
     # configura a aplicação e define as pastas onde ela deve procurar os itens
     current_path = os.sep.join(os.path.abspath(__file__).split(os.sep)[:-1])
+
+    with open(parameters_path, 'r', encoding='utf-8') as read_file:
+        parameters = json.load(read_file)
 
     app = Flask(
         'Classificador de Sentimentos COPLIN-UFSM',
@@ -48,7 +58,7 @@ def main():
         print('--' * 55, file=sys.stderr)
 
     # parte de classificação de modelos
-    model_path = app.config["MODEL_PATH"]
+    model_path = os.path.join(parameters['output_dir'], parameters['output_model_name'])
     print(f'Usando modelo de {model_path}')
 
     pipe = load_model(model_path, use_cpu=app.config['USE_CPU'])
@@ -70,4 +80,15 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(
+        description=__description__
+    )
+
+    parser.add_argument(
+        '--parameters-path', action='store', required=True,
+        help='Caminho para um arquivo de configurações do modelo'
+    )
+
+    args = parser.parse_args()
+
+    main(parameters_path=args.parameters_path)

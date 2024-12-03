@@ -250,7 +250,7 @@ def do_train_model(
         # use_cpu=parameters['use_cpu'],
         optim=parameters['optim'],
         load_best_model_at_end=True,
-        auto_find_batch_size=parameters['auto_find_batch_size'],
+        auto_find_batch_size=parameters['auto_find_batch_size']
     )
 
     trainer = Trainer(
@@ -338,6 +338,6 @@ if __name__ == '__main__':
         _original_sets[_set_name] = pd.read_csv(
             os.path.join(_parameters['local_dataset_path'], _set_name, f'{_set_name}.csv'),
             encoding='utf-8', sep=',', quotechar='"', quoting=csv.QUOTE_NONNUMERIC
-        )
+        ).loc[:, ['text'] + _parameters['class_name']]
 
     main(parameters=_parameters, original_sets=_original_sets)

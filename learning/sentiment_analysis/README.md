@@ -41,7 +41,7 @@ Para utilizar este script:
          multilabel_two_classes/
    ```
 
-2. Copie-e-cole para dentro da pasta do modelo o arquivo [parameters.json](parameters.json):
+2. Copie-e-cole para dentro da pasta do modelo o arquivo [parameters.json](student_sentiment_analysis.json):
 
    ```
    nlp/
@@ -75,7 +75,7 @@ Para utilizar este script:
 
    ```bash
    conda activate nlp
-   python learning/multilabel/finetune.py --parameters-path instance/models/<nome_do_modelo>/parameters.json 
+   python learning/multilabel/finetune.py --parameters-path instance/models/<nome_do_modelo>/student_sentiment_analysis.json 
    ```
   
    Substitua `<nome_do_modelo>` pelo nome dado para o parâmetro `output_model_name`.

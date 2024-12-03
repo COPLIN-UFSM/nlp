@@ -1,18 +1,16 @@
 __description__ = """Script que faz a classificação multi-rótulo e multi-classe de sentimento em textos."""
 
-import csv
 import argparse
+import csv
 
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
+import torch
 from sklearn.metrics import roc_auc_score, accuracy_score
-
+from tqdm import tqdm
 from transformers import pipeline, Pipeline, BertTokenizer, BertForSequenceClassification
 
 from learning import load_model
-from datasets import Dataset
-import torch
 
 
 def classify(pipe: Pipeline, text: str) -> list:
