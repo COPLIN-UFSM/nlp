@@ -26,28 +26,28 @@ pelo modelo.
 * NumPy 1.24.3
 * pandas 1.5.3
 
-## Uso
+## Treinamento
 
 Para utilizar este script:
 
 1. A partir do diretório raiz do repositório, crie uma pasta `instance`. Dentro dela, crie uma pasta `models`. 
   Finalmente, dentro da pasta `models`, crie outra pasta, desta vez com o nome do modelo que será treinado. Neste 
-  exemplo usaremos o nome `multilabel_two_classes`, mas você pode usar qualquer outro nome.
+  exemplo usaremos o nome `student-sentiment-analysis-multilabel`, mas você pode usar qualquer outro nome.
 
    ```
    nlp/
      instance/
        models/
-         multilabel_two_classes/
+         student-sentiment-analysis-multilabel/
    ```
 
-2. Copie-e-cole para dentro da pasta do modelo o arquivo [parameters.json](student_sentiment_analysis.json):
+2. Copie-e-cole para dentro da pasta do modelo o arquivo [parameters.json](student_sentiment_analysis_multilabel.json):
 
    ```
    nlp/
      instance/
        models/
-         multilabel_two_classes/
+         student-sentiment-analysis-multilabel/
            parameters.json
    ```
 
@@ -75,7 +75,16 @@ Para utilizar este script:
 
    ```bash
    conda activate nlp
-   python learning/multilabel/finetune.py --parameters-path instance/models/<nome_do_modelo>/student_sentiment_analysis.json 
+   python learning/multilabel/finetune.py --parameters-path instance/models/<nome_do_modelo>/student_sentiment_analysis_multilabel.json 
    ```
   
    Substitua `<nome_do_modelo>` pelo nome dado para o parâmetro `output_model_name`.
+
+## Predição
+
+Para predizer valores com o modelo treinado:
+
+```bash
+conda activate nlp
+python --model-path "path_to_model" --mode annotate --dataset-path "path_to_csv"
+```

@@ -22,7 +22,7 @@ def main():
     if os.path.basename(current_path) != 'learning':
         raise FileNotFoundError('Execute este notebook a partir da pasta \'learning\'!')
 
-    parameters_path = os.path.join(current_path, 'instance', 'student_sentiment_analysis.json')
+    parameters_path = os.path.join(current_path, 'instance', 'student_sentiment_analysis_multilabel.json')
 
     if os.path.exists(parameters_path):
         status = f'usando arquivo de parâmetros em {parameters_path}'

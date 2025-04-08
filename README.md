@@ -78,6 +78,11 @@ torch.cuda.is_available()
 A resposta deve ser `True`, caso uma placa de vídeo NVIDIA compatível esteja disponível. A disponibilidade depende dos
 drivers mais recentes estarem instalados.
 
+## Instruções de uso
+
+> [!NOTE]
+> Para classificação dos comentários da avaliação de ensino-aprendizagem, siga para [Análise de sentimento](learning/sentiment_analysis/README.md).
+
 ## Contato
 
 Desenvolvido originalmente por Henry Cagnini [henry.cagnini@ufsm.br]() e idealizado por Raphael Amaro [raphael.amaro@ufsm.br]().
