@@ -28,7 +28,6 @@ dependencies:
   - spacy
   - shap
   - pip:
-    - ibm-db==3.1.4
     - coplin-db2
     - accelerate
     - timm
