@@ -1,5 +1,8 @@
 # Natural Language Processing
 
+> [!NOTE]
+> O modelo treinado está disponível para download no HuggingFace: https://huggingface.co/COPLIN-UFSM/student-sentiment-analysis-multilabel
+
 Este repositório é uma coleção de scripts e ferramentas utilizados para tarefas de Processamento de Linguagem Natural
 (Natural Language Processing, ou NLP em inglês) realizados pela Coordenadoria de Planejamento Informacional da UFSM,
 ligada à Pró-reitoria de Planejamento - PROPLAN.
