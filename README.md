@@ -83,6 +83,26 @@ drivers mais recentes estarem instalados.
 > [!NOTE]
 > Para classificação dos comentários da avaliação de ensino-aprendizagem, siga para [Análise de sentimento](learning/sentiment_analysis/README.md).
 
+Para fazer anotação do sentimento em comentários:
+
+```bash
+conda activate nlp
+python learning/sentiment_analysis/predict.py --mode annotate --model-path COPLIN-UFSM/student-sentiment-analysis-multilabel --dataset-path <caminho_para_csv>
+```
+
+onde `<caminho_para_csv>` deve ser substituído por um caminho para um arquivo csv com os dados a serem anotados, nesse formato:
+
+1. É um arquivo csv; 
+2. Valores separados por vírgula; 
+3. Valores textuais estão dentro de "aspas"; 
+4. Codificação do arquivo é UTF-8. 
+
+Caso o arquivo não atenda esses critérios, é possível usar piping:
+
+```bash
+python scripts\convert_csv.py --csv-path "C:\Users\HenryCagnini\Desktop\Aval_Ensino_Aprendizagem_comentarios_2025_2_anual.csv" --sep ";" --encoding "utf-8" | python -m learning.sentiment_analysis.predict --mode "annotate" --model-path "COPLIN-UFSM/student-sentiment-analysis-multilabel" --text-column OBSERVACAO
+```
+
 ## Contato
 
 Desenvolvido originalmente por Henry Cagnini [henry.cagnini@ufsm.br]() e idealizado por Raphael Amaro [raphael.amaro@ufsm.br]().

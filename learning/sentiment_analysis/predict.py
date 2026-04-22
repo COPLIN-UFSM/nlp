@@ -2,6 +2,8 @@ __description__ = """Script que faz a classificação multi-rótulo e multi-clas
 
 import argparse
 import csv
+import sys
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -9,8 +11,6 @@ import torch
 from sklearn.metrics import roc_auc_score, accuracy_score
 from tqdm import tqdm
 from transformers import pipeline, Pipeline, BertTokenizer, BertForSequenceClassification
-
-from learning import load_model
 
 
 def classify(pipe: Pipeline, text: str) -> list:
@@ -26,33 +26,20 @@ def classify(pipe: Pipeline, text: str) -> list:
     return predict
 
 
-def main(model_path: str):
-    pipe = load_model(model_path)
-
-    text = 'eu gosto muito do professor fulano! é o melhor professor do mundo'
-
-    predict = pipe(text)
-
-    print(text)
-    print(pd.DataFrame.from_dict(predict[0]))
-
-
-def __configure__(model_path: str, dataset_path: str, token=None) -> tuple:
+def __configure__(model_path: str, token=None) -> tuple:
     model = BertForSequenceClassification.from_pretrained(model_path, token=token)
     tokenizer = BertTokenizer.from_pretrained(
         model_path, model_max_length=model.config.max_position_embeddings, token=token
     )
     pipe = pipeline('sentiment-analysis', model=model, tokenizer=tokenizer, device=get_device())
 
-    df = pd.read_csv(dataset_path, sep=',', quotechar='"', encoding='utf-8', quoting=csv.QUOTE_NONNUMERIC)
-
-    return model, tokenizer, pipe, df
+    return model, tokenizer, pipe
 
 
-def evaluate(dataset_path: str, model_path: str, token: str = None) -> dict:
-    model, tokenizer, pipe, df = __configure__(model_path, dataset_path, token)
+def evaluate(df: str, model_path: str, text_column, token: str = None) -> dict:
+    model, tokenizer, pipe = __configure__(model_path, token)
 
-    preds = pipe(df['text'].values.tolist(), top_k=None)
+    preds = pipe(df[text_column].values.tolist(), top_k=None)
 
     y_pred = np.zeros((len(preds), model.config.num_labels), dtype=int)
     y_true = np.zeros((len(preds), model.config.num_labels), dtype=int)
@@ -76,27 +63,29 @@ def evaluate(dataset_path: str, model_path: str, token: str = None) -> dict:
     return metrics
 
 
-def check_compliance(df):
-    return 'text' in df.columns
+def check_compliance(df, text_column):
+    return text_column in df.columns
 
 
 def get_device():
     return 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
 
-def annotate(dataset_path: str, model_path: str, token: str = None) -> pd.DataFrame:
+def annotate(df: Union[str|pd.DataFrame], output_path: str, model_path: str, text_column: str, token: str = None) -> pd.DataFrame:
     """
     Anota a polaridade de comentários de um arquivo csv para outro arquivo csv.
 
-    :param dataset_path: Caminho para um arquivo csv em disco.
+    :param df: Dataframe com os dados a serem anotados
+    :param output_path: onde escrever os dados anotados
     :param model_path: Caminho para o modelo do HuggingFace, armazenado em disco ou no repositório do HuggingFace.
+    :param text_column: O nome da coluna que possui o comentário a ser classificado.
     :param token: Opcional - caso o modelo esteja armazenado em um repositório privado do HuggingFace, o token de
         acesso a este modelo.
     """
 
-    model, tokenizer, pipe, df = __configure__(model_path, dataset_path, token)
+    model, tokenizer, pipe = __configure__(model_path, token)
 
-    if not check_compliance(df):
+    if not check_compliance(df, text_column):
         raise ValueError('A tabela de textos para ser anotados deve conter uma coluna de nome \'text\', com o '
                          'texto a ser classificado!\nVocê pode trocar o nome desta coluna após a classificação, se '
                          'assim desejar.')
@@ -107,20 +96,26 @@ def annotate(dataset_path: str, model_path: str, token: str = None) -> pd.DataFr
 
     with tqdm(range(len(df)), desc='Anotando') as pbar:
         for i, row in df.iterrows():
-            pred = pipe(row['text'], top_k=None)
+            pred = pipe(row[text_column], top_k=None)
 
             for result in pred:
                 df.loc[i, result['label']] = result['score']
 
             pbar.update(1)
 
-    new_path = dataset_path.replace('.csv', ' (anotado).csv')
     df.to_csv(
-        new_path,
+        output_path,
         sep=',', quotechar='"', encoding='utf-8', quoting=csv.QUOTE_NONNUMERIC, index=False
     )
-    print(f'Dataset anotado em {new_path}')
+    print(f'Dataset anotado em {output_path}')
     return df
+
+
+def get_input_stream(dataset_path):
+    if dataset_path:
+        return pd.read_csv(dataset_path, encoding='utf-8', sep=',', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
+    else:
+        return pd.read_csv(sys.stdin.buffer, encoding='utf-8', sep=',', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
 
 
 if __name__ == '__main__':
@@ -148,20 +143,34 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
-        '--dataset-path', action='store', required=True,
-        help='Caminho para um dataset no disco que será anotado com os sentimentos do classificador. O '
+        '--dataset-path', action='store', required=False,
+        help='Opcional - Caminho para um dataset no disco que será anotado com os sentimentos do classificador. O '
              'dataset deve possuir as seguintes características: '
              '(1) É um arquivo csv; '
              '(2) Valores separados por vírgula; '
              '(3) Valores textuais estão dentro de "aspas"; '
              '(4) Codificação do arquivo é UTF-8. '
+             'Se não for fornecido, o parâmetro --dataset-file deve ser fornecido. Nesse caso, o dataset será lido da '
+             'linha de comando como texto. Use esta opção para fazer piping.'
+    )
+
+    parser.add_argument(
+        '--text-column', action='store', required=True,
+        help='O nome da coluna que possui o comentário a ser classificado.'
     )
 
     args = parser.parse_args()
+    dataframe = get_input_stream(args.dataset_path)
+
+    if args.dataset_path is not None:
+        output_path = args.dataset_path.replace('.csv', ' (anotado).csv')
+    else:
+        output_path = 'output.csv'
 
     if args.mode == 'annotate':
-        annotate(dataset_path=args.dataset_path, model_path=args.model_path, token=args.token)
+        annotate(df=dataframe, output_path=output_path, model_path=args.model_path, text_column=args.text_column, token=args.token)
     elif args.mode == 'evaluate':
-        evaluate(dataset_path=args.dataset_path, model_path=args.model_path, token=args.token)
+        raise NotImplementedError('código defasado! fazer adaptações necessárias!')
+        evaluate(df=dataframe, output_path=output_path, model_path=args.model_path, text_column=args.text_column, token=args.token)
     else:
         raise AttributeError(f'Modo de execução desconhecido: {args.mode}')
