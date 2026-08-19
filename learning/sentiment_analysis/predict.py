@@ -29,7 +29,10 @@ def classify(pipe: Pipeline, text: str) -> list:
 def __configure__(model_path: str, token=None) -> tuple:
     model = BertForSequenceClassification.from_pretrained(model_path, token=token)
     tokenizer = BertTokenizer.from_pretrained(
-        model_path, model_max_length=model.config.max_position_embeddings, token=token
+        model_path,
+        model_max_length=model.config.max_position_embeddings,
+        truncation=True,
+        token=token
     )
     pipe = pipeline('sentiment-analysis', model=model, tokenizer=tokenizer, device=get_device())
 
@@ -39,7 +42,7 @@ def __configure__(model_path: str, token=None) -> tuple:
 def evaluate(df: str, model_path: str, text_column, token: str = None) -> dict:
     model, tokenizer, pipe = __configure__(model_path, token)
 
-    preds = pipe(df[text_column].values.tolist(), top_k=None)
+    preds = pipe(df[text_column].values.tolist(), top_k=None, truncation=True)
 
     y_pred = np.zeros((len(preds), model.config.num_labels), dtype=int)
     y_true = np.zeros((len(preds), model.config.num_labels), dtype=int)
@@ -96,7 +99,7 @@ def annotate(df: Union[str|pd.DataFrame], output_path: str, model_path: str, tex
 
     with tqdm(range(len(df)), desc='Anotando') as pbar:
         for i, row in df.iterrows():
-            pred = pipe(row[text_column], top_k=None)
+            pred = pipe(row[text_column], top_k=None, truncation=True)
 
             for result in pred:
                 df.loc[i, result['label']] = result['score']
